@@ -51,6 +51,17 @@ public:
         return *this;
     }
 
+    // 移动赋值运算符
+    // 和复制赋值运算符的区别在于，其参数是右值引用
+    Slice& operator= (Slice<T> &&slice)
+    {
+        //printf("Slice1 移动赋值运算符\n");
+        this->addr = slice.addr;
+        this->len  = slice.len;
+
+        return *this;
+    }
+
     /*   */
     T at(size_t index)
     {
