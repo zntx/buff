@@ -3,10 +3,14 @@
 
 //#include <atomic>
 //#include <stddef.h>
+//#include <stddef.h>
 
+template <typename T>
 template <typename T>
 class Slice {
 public:
+    T *addr;
+    std::size_t len;
     T *addr;
     std::size_t len;
 
@@ -23,21 +27,18 @@ public:
         this->addr = slice.addr;
         this->len  = slice.len;
     }
+    Slice(const Slice<T> &slice)
+    {
+        //printf("Slice1 拷贝构造\n");
+        this->addr = slice.addr;
+        this->len  = slice.len;
+    }
     // 移动构造
     Slice(Slice<T> &&slice)
     {
         //printf("Slice1 移动构造\n");
         this->addr = slice.addr;
         this->len  = slice.len;
-    }
-
-    Slice& operator= (const Slice<T> &slice)
-    {
-        //printf("Slice1 赋值运算符\n");
-        this->addr = slice.addr;
-        this->len  = slice.len;
-
-        return *this;
     }
 
     // 移动赋值运算符
@@ -58,13 +59,12 @@ public:
         return this->addr[i];
     }
 
-
-
     /*   */
     T at(size_t index)
     {
         return *(this->addr + index);
     }
+
     bool set(size_t index, T ch)
     {
         if( index <= this->len )
