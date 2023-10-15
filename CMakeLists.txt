@@ -12,10 +12,10 @@ set( CMAKE_BUILD_TYPE "Debug" )
 
 #Depend(buff git "https://github.com/zntx/buff.git" )
 
-aux_source_directory(src SOURCES)
+# aux_source_directory(src SOURCES)
 
-# 生成一个静态库，会生成一个libhello.a文件
-add_library( ${PROJECT_NAME} STATIC ${SOURCES} )
+# # 生成一个静态库，会生成一个libhello.a文件
+# add_library( ${PROJECT_NAME} STATIC ${SOURCES} )
 # 生成一个共享库，会生成一个libhello_shared.so文件
 #add_library( ${CMAKE_PROJECT_NAME} SHARED ${SOURCES} )
 

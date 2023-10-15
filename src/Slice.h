@@ -2,91 +2,91 @@
 #define SLICE_H
 
 //#include <atomic>
-#include <stddef.h>
+//#include <stddef.h>
 
+template <typename T>
 class Slice {
 public:
-    unsigned char* address;
-    size_t len;
+    T *addr;
+    std::size_t len;
 
+    Slice(T* address, std::size_t size)
+    {
+        addr = address;
+        len = size;
+    }
 
-    Slice(unsigned char* address, size_t size);
     // 拷贝构造
-    Slice(const Slice &slice);
-    Slice& operator=(const Slice& slice); 
+    Slice(const Slice<T> &slice)
+    {
+        //printf("Slice1 拷贝构造\n");
+        this->addr = slice.addr;
+        this->len  = slice.len;
+    }
     // 移动构造
-    Slice(Slice &&slice);
-    Slice& operator=(Slice&& slice); 
-    ~Slice(); 
+    Slice(Slice<T> &&slice)
+    {
+        //printf("Slice1 移动构造\n");
+        this->addr = slice.addr;
+        this->len  = slice.len;
+    }
+
+    Slice& operator= (const Slice<T> &slice)
+    {
+        //printf("Slice1 赋值运算符\n");
+        this->addr = slice.addr;
+        this->len  = slice.len;
+
+        return *this;
+    }
+
+    // 移动赋值运算符
+    // 和复制赋值运算符的区别在于，其参数是右值引用
+    Slice& operator= (Slice<T> &&slice)
+    {
+        //printf("Slice1 移动赋值运算符\n");
+        this->addr = slice.addr;
+        this->len  = slice.len;
+
+        return *this;
+    }
+
+    T operator[](std::size_t i)
+    {
+        if( i > this->len)
+            throw "out of array";
+        return this->addr[i];
+    }
+
+
+
     /*   */
-    unsigned char at(size_t index);
-    bool set(size_t index, unsigned char ch);
-    Slice slice(size_t pso, size_t size);
-    Slice slice(size_t pso);
-};
+    T at(size_t index)
+    {
+        return *(this->addr + index);
+    }
+    bool set(size_t index, T ch)
+    {
+        if( index <= this->len )
+        {
+            *( this->addr + index) = ch;
+            return true;
+        }
 
-
-#if 0
-enum Vtable {
-    Vtable_Static,
-    Vtable_Share
-};
-
-
-class Buff{
-public:
-    unsigned char* address = nullptr;
-    std::atomic<int> *use = nullptr;
-    size_t size = 0;
-    size_t read_index = 0;
-    size_t write_index = 0;
-    Vtable vtable = Vtable_Static;
-
-public:
-    Buff(Slice* slice );
-    Buff(unsigned char* address, size_t size);
-    Buff(size_t _size);
-    Buff(const Buff &buff);
-    Buff(Buff &&buff);
-    ~Buff(); 
-
-    /* 剩余空间大小 */
-    size_t remaining( );
-    /* 返回从当前位置开始的切片 */
-    Slice* check();
+        return false;
+    }
     
-    /* 返回原始数据 */
-    unsigned char* data( );
-    /* 读取有效门数据 */
-    int read(Slice (&slice)[2]);
-    /* 读标记前进 */
-    void take(size_t len);
-    void take(const Slice *ch);
-    /* 返回u8 并前进前进 */
-    unsigned char get_u8(); 
-    /*   */
-    unsigned char at(size_t index);
-    /* 填写数据 */
-    void put(unsigned char ch);
-    /* 填写数据 */
-    void put(const Slice *ch); 
+    Slice slice(size_t pso, size_t size)
+    {
+        return Slice(this->address + pso, size);
+    }
 
-
-    Buff& operator=(const Buff& ptr);   
+    Slice slice(size_t pso )
+    {
+        return Slice(this->address + pso, this->len - pso);
+    }
 };
 
-class BuffMut : public Buff{
 
-public:  
-    using Buff::Buff;
-    /*  */
-    void put(unsigned char ch);
-    /*  */
-    void put(const Slice *ch); 
-    /* 读取有效门数据 */
-    Slice read();
-};
-
-#endif
 
 #endif
